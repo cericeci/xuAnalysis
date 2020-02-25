@@ -106,11 +106,11 @@ A small local test can be performed with
 
 Or any other sample pointed through with -s. To run in multicore model (quicker, but don't surpass your machine capacity!!)
 
-    python run.py ttZAnalysis/testcfg.cfg -s TTZToLLNuNu -n 8 
+    python run.py ttZAnalysis/testcfg.cfg -n 8 
 
 And to send them to the batch system
 
-    python run.py ttZAnalysis/testcfg.cfg -s TTZToLLNuNu -n 64 -j 
+    python run.py ttZAnalysis/testcfg.cfg -n 64 -j 
 
 All arguments:
    - -n, --nSlots   : Run on n slots (or send n jobs)
