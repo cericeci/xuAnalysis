@@ -2,19 +2,15 @@
 
 Download the code from github:
 
-    git clone https://github.com/Oviedo-PAF/xuAnalysis.git
+    git clone https://github.com/cericeci/xuAnalysis.git
 
 or using ssh:
 
-    git clone git@github.com:Oviedo-PAF/xuAnalysis.git
+    git clone git@github.com:cericeci/xuAnalysis.git
 
-
-## Create an analysis
-
-    python framework/AnalysisCreator.py myAnalysis
-
-Implement your analysis in "myAnalysis/myAnalysis.py".
-Edit the cfg file "myAnalysis/testcfg.cfg". Introduce the path to the trees and the sample. 
+checkout your preferred branch (i.e. ttZ)
+    
+    git checkout ttZ
 
 ## Description of the analysis
 
@@ -100,15 +96,23 @@ Loop over the muons in the tree *t*, create the TLorentzVector, apply selection 
 
 
 ## Run the analysis
+The standard running command is
 
-    python run.py myAnalysis/testcfg.cfg
+    python run.py ttZAnalysis/testcfg.cfg
 
-Or just introduce all the parameters in the run command. You can get the usage by executing run.py with no arguments.
-Example:
+A small local test can be performed with
 
-    python run.py myAnalysis/testcfg.cfg -n 20 -s sample
+    python run.py ttZAnalysis/testcfg.cfg -s TTZToLLNuNu -t
 
-Arguments:
+Or any other sample pointed through with -s. To run in multicore model (quicker, but don't surpass your machine capacity!!)
+
+    python run.py ttZAnalysis/testcfg.cfg -s TTZToLLNuNu -n 8 
+
+And to send them to the batch system
+
+    python run.py ttZAnalysis/testcfg.cfg -s TTZToLLNuNu -n 64 -j 
+
+All arguments:
    - -n, --nSlots   : Run on n slots (or send n jobs)
    - -p, --pretend  : Create the files but not send the jobs
    - -t, --test     : Test locally with 1000 events
@@ -122,19 +126,27 @@ Arguments:
    - --outpath  : Customize the name of the output path
    - --nEvents  : Run over a given number of events
 
-### Run on mini trees
-
-[Under construction]
-
 ## Merge rootfiles
 
-    python framework/merge.py output_folder/ -frv
+If sent to batch or run in multicore, files will be fragmented into chunks. A script is provided to merge them
+
+    python framework/merge.py tempttZ/ -frv
 
 Options:
 
   - -f : force if there are some merged trees with the same name as output.
   - -r : auto-remove single files after merging
   - -v : verbose
+
+## Produce plots
+
+To run plots go to the analysis folder
+
+    cd ttZAnalysis
+
+And then run plot.py
+
+    python plot.py
 
 ## Explore the trees
 
