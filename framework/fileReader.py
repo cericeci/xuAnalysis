@@ -1,5 +1,7 @@
 import os, sys, argparse
 from ROOT import TFile, TTree, TH1F
+import pickle
+from picklers import Counter, diclist
 
 defaultPath = '/afs/cern.ch/work/j/jrgonzal/public/Run2017G/skim2l'
 
@@ -40,6 +42,13 @@ def findValidRootfiles(path, sampleName = '', getOnlyNumberedFiles = False, verb
   if FullPaths: files = [path + x for x in files]
   if len(files) == 0: 
     if retry: files = findValidRootfiles(path, 'Tree_' + sampleName, getOnlyNumberedFiles, verbose, FullPaths, False)
+
+    if len(files) == 0: #Try the old cmgtools way then
+      for f in os.listdir(path):
+        if not(sampleName == f.replace("_part0","").replace("_part1","").replace("_part2","").replace("_part3","").replace("_part4","").replace("_part5","").replace("_part6","").replace("_part7","").replace("_part8","").replace("_part9","").replace("_part10","").replace("_part11","").replace("_part12","").replace("_part13","").replace("_part14","").replace("_part15","").replace("_part15","") ): continue
+        elif (os.path.isfile(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")): files.append(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")
+
+
     if len(files) == 0: 
       print '[ERROR]: Not files "' + sampleName + '" found in: ' + path
       return []
@@ -193,8 +202,24 @@ def GetAllInfoFromFile(fname, treeName = 'Events'):
     hc = f.Get('Count')
     nEvents = t.GetEntries()
     nGenEvents = hc.GetBinContent(1) if isinstance(hc,TH1F) else 1
-    nSumOfWeights = hs.GetBinContent(1) if isinstance(hs,TH1F) else 1
+    nSumOfWeights = hs.GetBinContent(1) if isinstance(hs,TH1F) else nGenEvents
     isData = not hasattr(t,'genWeight')
+    if "treeProducerSusyMultilepton" in fname: # The old heppy setup
+      fname = fname.replace("treeProducerSusyMultilepton/tree.root","skimAnalyzerCount/SkimReport.txt")
+      values = {}
+          
+      for line in open(fname,"r").readlines():
+        words = line.replace("Events","").replace("Weights","").replace("\t","").replace("\n","").split(" ")
+        key = ""
+        val = -1
+        for w in words:
+          if w == "": continue
+          if key != "" and val == -1: val = w
+          if key == "": key = w
+        values[key] = val
+      nGenEvents    = float(values["All"])
+      nSumOfWeights = float(values["Sum"])
+
     return [nEvents, nGenEvents, nSumOfWeights, isData]
   else: print '[ERROR] [GetAllInfoFromFile]: wrong input' 
 

@@ -15,7 +15,7 @@ except ImportError:
   print 'Please, load ROOT... (typically by executing \'root6\')'
   exit()
 
-from ROOT import gROOT
+from ROOT import gROOT,TFile
 gROOT.SetBatch(1)
 
 from framework.fileReader import getDicFiles, GetAllInfoFromFile, IsVarInTree, GuessIsData, GetValOfVarInTree, GetFiles
@@ -110,11 +110,23 @@ def RunSample(selection, path, sample, year = 2018, xsec = 1, nSlots = 1, outnam
     sendJobs = False
   if isinstance(sample, str) and ',' in sample: sample = sample.replace(' ','').split(',')
   sap = sample if not isinstance(sample, list) else sample[0]
-  gs = filter(lambda x : os.path.isfile(x), [path + sap + '_0.root', path + 'Tree_' + sap + '_0.root', path + sap + '.root'])
+  gs = filter(lambda x : os.path.isfile(x), [path + sap + '_0.root', path + 'Tree_' + sap + '_0.root', path + sap + '.root', path + sap + "/treeProducerSusyMultilepton/tree.root", path + sap + "_part0/treeProducerSusyMultilepton/tree.root"])
   if len(gs) == 0: print 'ERROR: file %s not found in %s'%(sap, path)
   isData = GuessIsData(gs[0])
   
-  xsec = GetXsec(xsec, outname, verbose, isData) if not dotest else 1
+  try:
+    # Automatic reading of x-sec
+    xsec = 0
+    tf = TFile(gs[0])
+    for ev in tf.Get("Events"):
+      xsec = ev.xsec
+      break
+    tf.Close()
+
+
+  except:
+    # Default to reading from file if not
+    xsec = GetXsec(xsec, outname, verbose, isData) if not dotest else 1
 
   try:
     selecModul = __import__('%s.%s'%(selection,selection))
