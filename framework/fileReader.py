@@ -45,8 +45,10 @@ def findValidRootfiles(path, sampleName = '', getOnlyNumberedFiles = False, verb
 
     if len(files) == 0: #Try the old cmgtools way then
       for f in os.listdir(path):
-        if not(sampleName == f.replace("_part0","").replace("_part1","").replace("_part2","").replace("_part3","").replace("_part4","").replace("_part5","").replace("_part6","").replace("_part7","").replace("_part8","").replace("_part9","").replace("_part10","").replace("_part11","").replace("_part12","").replace("_part13","").replace("_part14","").replace("_part15","").replace("_part15","") ): continue
-        elif (os.path.isfile(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")): files.append(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")
+        if not(sampleName == f.replace("_part0","").replace("_part1","").replace("_part2","").replace("_part3","").replace("_part4","").replace("_part5","").replace("_part6","").replace("_part7","").replace("_part8","").replace("_part9","").replace("_part10","").replace("_part11","").replace("_part12","").replace("_part13","").replace("_part14","").replace("_part15","").replace("_part15","") ): 
+          continue
+        elif (os.path.isfile(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")): 
+          files.append(path + "/" + f + "/treeProducerSusyMultilepton/tree.root")
 
 
     if len(files) == 0: 
